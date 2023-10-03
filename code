@@ -1,0 +1,129 @@
+
+#include <iostream>
+#include <vector>
+#include <cstdlib>
+#include <ctime>
+#include <fstream>
+#include <sstream>
+#include <string>
+#include <mpi.h> // Open MPI
+
+
+using namespace std;
+
+
+// Define a struct to represent a vehicle type
+struct VehicleType {
+    int typeId;
+    double maxSpeed;
+    int priority;
+};
+
+
+// Assign vehicle types and priorities
+void assignVehicleTypes(vector<Vehicle>& vehicles) {
+    // Implement logic to categorize vehicles and assign priorities
+    // For simplicity, you can assign random types and priorities in this example
+    for (auto& vehicle : vehicles) {
+        vehicle.typeId = rand() % 3; // Assign a random type (0, 1, or 2) as an example
+        vehicle.priority = rand() % 3; // Assign a random priority (0, 1, or 2) as an example
+    }
+}
+
+
+// Define a struct to represent a road segment with traffic density
+struct RoadSegment {
+    int id;
+    int numLanes;
+    int speedLimit;
+    double trafficDensity; // Range from 0.0 to 1.0
+};
+
+
+// Function to simulate the movement of vehicles and record positions
+void simulateTraffic(vector<double>& time, vector<double>& positions, int numVehicles, double avgSpeed) {
+    vector<Vehicle> vehicles;
+    vector<RoadSegment> roadSegments;
+
+
+    // Initialize vehicles with user-defined number and average speed
+    for (int i = 0; i < numVehicles; ++i) {
+        double initialSpeed = avgSpeed + (rand() % 20 - 10); // Random speed variation (-10 to 10)
+        vehicles.push_back({i, 0.0, initialSpeed});
+    }
+
+
+    // Initialize road segments with traffic density
+    for (int i = 0; i < 10; ++i) {
+        roadSegments.push_back({i, 2, 60, 0.5}); // Example: 2 lanes, 60 mph speed limit, 50% traffic density
+    }
+
+
+    // Assign vehicle types and priorities
+    assignVehicleTypes(vehicles);
+
+
+    // Simulate traffic for a fixed number of time steps
+    int numTimeSteps = 100;
+    for (int t = 0; t < numTimeSteps; ++t) {
+        // Update vehicle positions and speeds based on traffic rules
+        for (auto& vehicle : vehicles) {
+            // Implement vehicle movement logic here, considering vehicle type, priority, and traffic density
+        }
+
+
+        // Record the positions of a specific vehicle (e.g., vehicle with ID 0)
+        // You can customize this to record positions of multiple vehicles or all vehicles
+        if (vehicles.size() > 0 && vehicles[0].id == 0) {
+            time.push_back(static_cast<double>(t));
+            positions.push_back(vehicles[0].position);
+        }
+    }
+}
+
+
+// Function to input simulation parameters from the user
+void inputParameters(int& numVehicles, double& avgSpeed) {
+    cout << "Enter the number of vehicles: ";
+    cin >> numVehicles;
+
+
+    cout << "Enter the average speed of vehicles (e.g., 50 mph): ";
+    cin >> avgSpeed;
+}
+
+
+int main(int argc, char* argv[]) {
+    MPI_Init(&argc, &argv);
+
+
+    vector<double> time;
+    vector<double> positions;
+
+
+    int numVehicles;
+    double avgSpeed;
+
+
+    // Input simulation parameters from the user
+    inputParameters(numVehicles, avgSpeed);
+
+
+    // Simulate traffic and record data
+    simulateTraffic(time, positions, numVehicles, avgSpeed);
+
+
+    // Output the recorded data (positions over time) to a file or perform other actions as needed
+    // You can save the data to a file or process it further based on your requirements
+
+
+    cout << "Simulation complete." << endl;
+
+
+    MPI_Finalize(); // Finalize MPI
+
+
+    return 0;
+}
+
+
